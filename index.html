@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScriptでお絵描きしよう！</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+  <header>
+    <h1>JavaScriptとCanvasでつくる お絵描きアプリ</h1>
+    <p>このページでは、JavaScriptのCanvas APIを使ったお絵描き機能の仕組みを解説し、実際に体験できます。</p>
+  </header>
+
+<section class="explanation">
+  <h2>JavaScriptとCanvasの基本</h2>
+  <p>このお絵描きアプリは、HTMLの<strong>&lt;canvas&gt;</strong>要素と<strong>JavaScript</strong>を組み合わせて作られています。</p>
+
+  <h3>1. Canvasとは</h3>
+  <p><code>&lt;canvas&gt;</code>は、HTML上で図形や画像を描画するための「キャンバス（画用紙）」のような領域です。これ自体には描画能力はなく、JavaScriptを使って線や図形を描き込みます。</p>
+ <img src="p1.png">
+  <p>まず、HTMLに上記のように<code>&lt;canvas&gt;</code>タグを配置します。そして、JavaScriptでこの要素を取得し、描画の準備をします。</p>
+  <img src="p2.png">
+  <p><code>getContext("2d")</code>は、2Dグラフィックを描くための様々な機能（メソッドやプロパティ）を持つ「コンテキストオブジェクト」を取得する命令です。これ以降、<code>ctx</code>という変数を使ってキャンバスに描画していきます。</p>
+
+
+
+
+  <h3>2. 線を描く仕組み</h3>
+  <p>線は、マウスの動きに合わせて描画されます。具体的には、以下の3つのマウスイベントを利用しています。</p>
+  <ul>
+    <li><strong>mousedown</strong>: マウスボタンが押された時</li>
+    <li><strong>mousemove</strong>: マウスが動いた時</li>
+    <li><strong>mouseup</strong>: マウスボタンが離された時</li>
+  </ul>
+  <p>これらのイベントをJavaScriptで監視し、以下のような流れで描画処理を行っています。</p>
+  <ol>
+    <li><b>(mousedown)</b> マウスが押されたら、描画モードをONにし、新しい線の描画を開始 (<code>beginPath</code>)。そして、マウスの座標までペンを移動させます (<code>moveTo</code>)。</li>
+    <li><b>(mousemove)</b> マウスが動いている間、もし描画モードがONなら、前の座標から現在のマウス座標まで線を引きます (<code>lineTo</code>)。そして、その線に色を付けて実際に表示します (<code>stroke</code>)。</li>
+    <li><b>(mouseup)</b> マウスが離されたら、描画モードをOFFにします。</li>
+  </ol>
+  <img src="p3.png">
+
+  
+
+  <h2>お絵描きアプリの機能解説</h2>
+  <p>このアプリに実装されている各機能が、どのように実現されているかを解説します。</p>
+
+  <h3>色・太さ・透明度の変更</h3>
+  <p>コントロールパネルの入力値が変わると、JavaScriptがそれを検知し、<code>ctx</code>オブジェクトが持つ以下のプロパティに値を設定しています。これにより、<code>stroke()</code>で描画される線のスタイルが変わります。</p>
+  <ul>
+      <li><strong>色 (Color)</strong>: <code>ctx.strokeStyle = "色コード";</code></li>
+      <li><strong>線の太さ (Line Width)</strong>: <code>ctx.lineWidth = 太さの数値;</code></li>
+      <li><strong>透明度 (Alpha)</strong>: <code>ctx.globalAlpha = 0.0から1.0の数値;</code></li>
+  </ul>
+  <img src="p4.png">
+
+  <h3>消しゴム機能</h3>
+  <p>消しゴムは、特別な消去機能を使っているわけではありません。実は、<strong>キャンバスの背景色（この場合は白）で線を描いている</strong>だけです。これにより、描画した部分を「消した」ように見せています。</p>
+  <img src="p5.png">
+
+  <h3>「1つ戻す」機能 (Undo)</h3>
+  <p>この機能は、キャンバスの状態を画像として保存しておくことで実現しています。</p>
+  <ol>
+      <li>マウスボタンが押されるなど、何か新しい描画操作が始まる直前に、<code>canvas.toDataURL()</code>を使って現在のキャンバスの状態を画像データに変換し、配列に保存します。</li>
+      <li>「1つ戻す」ボタンが押されると、配列から一番新しい画像データを取り出します。</li>
+      <li>一度キャンバスを真っ白に消去(<code>clearRect</code>)してから、取り出した画像データをキャンバスに貼り付け(<code>drawImage</code>)て、1つ前の状態を復元します。</li>
+  </ol>
+  <img src="p6.png">
+  
+  <h3>全消去 (クリア) 機能</h3>
+  <p><code>ctx.clearRect()</code>という命令を使って、キャンバス全体を指定した範囲で透明に消去しています。</p>
+  <img src="p7.png">
+</section>
+  <section class="drawing-area">
+    <h2>実際に描いてみよう！</h2>
+
+<div class="controls">
+  <label>色:
+    <input type="color" id="colorPicker" value="#000000">
+  </label>
+  <label>線の太さ:
+    <input type="range" id="lineWidth" min="1" max="20" value="2">
+  </label>
+  <label>透明度:
+    <input type="range" id="alpha" min="0" max="1" step="0.1" value="1">
+  </label>
+  <button id="penBtn" class="active-button" onclick="disableEraser()"><i class="fa-solid fa-pen"></i></button>
+  <button id="eraserBtn" onclick="enableEraser()"><i class="fa-solid fa-eraser"></i></button>
+  <button onclick="undo()"><i class="fa-solid fa-rotate-left"></i></button>
+  <button onclick="clearCanvas()"><i class="fa-solid fa-trash-can"></i></button>
+</div>
+
+<div class="pen-preview">
+  <p>現在のペン</p>
+  <div id="penPreview"></div>
+</div>
+
+
+<!-- 消しゴム状態表示 -->
+<p id="eraserStatus" style="color: red; font-weight: bold;"></p>
+
+
+
+    <canvas id="canvas" width="500" height="400"></canvas>
+  </section>
+
+  <footer>
+    <p>本コンテンツの作成時間：約11時間</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

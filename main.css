@@ -1,0 +1,58 @@
+body {
+  font-family: sans-serif;
+  line-height: 1.6;
+  margin: 20px;
+  background-color: #FFCB5B;
+  color: #333;
+}
+
+header, section, footer {
+  margin-bottom: 40px;
+}
+
+canvas {
+  border: 2px solid #000;
+  background-color: #fff;
+  display: block;
+  margin-top: 10px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.controls input, .controls button {
+  margin-right: 10px;
+}
+
+.controls label {
+  margin-right: 10px;
+}
+.controls button {
+  margin-right: 10px;
+  padding: 4px 10px;
+}
+#eraserStatus {
+  margin-top: 10px;
+}
+
+.pen-preview {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#penPreview {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #333;
+  background-color: #000;
+  opacity: 1;
+}
+
+.controls button.active-button {
+  background-color: #007bff; 
+  color: white; 
+}
